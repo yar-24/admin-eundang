@@ -1,14 +1,14 @@
 export const userColumns = [
-  { field: "id", headerName: "ID", width: 70 },
+  { field: "_id", headerName: "ID", width: 70 },
   {
-    field: "user",
+    field: "name",
     headerName: "User",
     width: 230,
     renderCell: (params) => {
       return (
         <div className="cellWithImg">
-          <img className="cellImg" src={params.row.img} alt="avatar" />
-          {params.row.username}
+          <img className="cellImg" src={params.row.picProfile} alt="avatar" />
+          {params.row.name}
         </div>
       );
     },
@@ -18,24 +18,30 @@ export const userColumns = [
     headerName: "Email",
     width: 230,
   },
-
   {
-    field: "age",
-    headerName: "Age",
-    width: 100,
-  },
-  {
-    field: "status",
-    headerName: "Status",
-    width: 160,
+    field: "createdAt",
+    headerName: "Tgl Order",
+    width: 230,
     renderCell: (params) => {
-      return (
-        <div className={`cellWithStatus ${params.row.status}`}>
-          {params.row.status}
-        </div>
-      );
+      const current = new Date(params.row.createdAt);
+      const date = `${current.getDate()}-${
+        current.getMonth() + 1
+      }-${current.getFullYear()}`;
+      return <div className="cellWithImg">{date}</div>;
     },
   },
+  // {
+  //   field: "status",
+  //   headerName: "Status",
+  //   width: 160,
+  //   renderCell: (params) => {
+  //     return (
+  //       <div className={`cellWithStatus ${params.row.status}`}>
+  //         {params.row.status}
+  //       </div>
+  //     );
+  //   },
+  // },
 ];
 
 //temporary data

@@ -3,8 +3,57 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import Navbar from "../../components/navbar/Navbar";
 import Chart from "../../components/chart/Chart";
 import List from "../../components/table/Table";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getUser, reset } from "../../redux/features/auth/authSlice";
+import { getGoal } from "../../redux/features/goals/goalSlice";
+import { Link, useParams } from "react-router-dom";
+import Loading from "../../components/Loading";
 
 const Single = () => {
+  const dispatch = useDispatch();
+  const params = useParams();
+
+  const [user, setUser] = useState("");
+
+  const { isLoading} = useSelector(
+    (state) => state.auth
+  );
+
+  const { goals } = useSelector((state) => state.goals);
+
+  useEffect(() => {
+    dispatch(getUser(params.userId))
+      .then((res) => {
+        const data = res.payload;
+        setUser(data);
+      })
+      .catch((err) => {
+        console.log("err");
+      });
+
+      dispatch(reset())
+      
+  }, [dispatch, params.userId]);
+  
+
+  useEffect(() => {
+    dispatch(getGoal(user.token))
+    .then((res) => {
+      // console.log(res)
+    })
+    .catch((err) => {
+      console.log("err", err);
+    });
+    
+  }, [dispatch, user])
+
+  if (isLoading) {
+    return (
+      <Loading type={"balls"} color={"#FFFFFF"} height={"20%"} width={"20%"} />
+    );
+  }
+
   return (
     <div className="single">
       <Sidebar />
@@ -12,19 +61,27 @@ const Single = () => {
         <Navbar />
         <div className="top">
           <div className="left">
-            <div className="editButton">Edit</div>
+            <div className="containerBtn">
+              <Link to={`/users/edit/${params.userId}`} className="editButton">
+                <div>Edit</div>
+              </Link>
+              {goals[0] ? (
+                <a
+                  href={`https://e-undang.herokuapp.com/blue-flower/:namaTamu/${goals[0]._id}`}
+                  className="editButton"
+                >
+                  <div>Lihat Undangan</div>
+                </a>
+              ) : null}
+            </div>
             <h1 className="title">Information</h1>
             <div className="item">
-              <img
-                src="https://images.pexels.com/photos/733872/pexels-photo-733872.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260"
-                alt=""
-                className="itemImg"
-              />
+              <img src={user.picProfile} alt="" className="itemImg" />
               <div className="details">
-                <h1 className="itemTitle">Jane Doe</h1>
+                <h1 className="itemTitle">{user.name}</h1>
                 <div className="detailItem">
                   <span className="itemKey">Email:</span>
-                  <span className="itemValue">janedoe@gmail.com</span>
+                  <span className="itemValue">{user.email}</span>
                 </div>
                 <div className="detailItem">
                   <span className="itemKey">Phone:</span>
@@ -48,8 +105,8 @@ const Single = () => {
           </div>
         </div>
         <div className="bottom">
-        <h1 className="title">Last Transactions</h1>
-          <List/>
+          <h1 className="title">Last Transactions</h1>
+          <List />
         </div>
       </div>
     </div>

@@ -1,14 +1,60 @@
 import "./datatable.scss";
 import { DataGrid } from "@mui/x-data-grid";
-import { userColumns, userRows } from "../../datatablesource";
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { userColumns } from "../../datatablesource";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import {
+  deleteUser,
+  getUser,
+  getUsers,
+  reset,
+} from "../../redux/features/auth/authSlice";
+import Loading from "../Loading";
 
 const Datatable = () => {
-  const [data, setData] = useState(userRows);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const [data, setData] = useState([]);
+
+  const { isLoading } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    dispatch(getUsers())
+      .then((res) => {
+        const datas = res.payload;
+        setData(datas);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+
+    if (isLoading) {
+      return (
+        <Loading
+          type={"balls"}
+          color={"#FFFFFF"}
+          height={"20%"}
+          width={"20%"}
+        />
+      );
+    }
+    dispatch(reset());
+    
+  }, [dispatch, isLoading]);
 
   const handleDelete = (id) => {
     setData(data.filter((item) => item.id !== id));
+    dispatch(deleteUser(id))
+  };
+
+  const handleView = (id) => {
+    setData(data.filter((item) => item.id !== id));
+    dispatch(getUser(id));
+    navigate(`/users/${id}`);
   };
 
   const actionColumn = [
@@ -19,12 +65,15 @@ const Datatable = () => {
       renderCell: (params) => {
         return (
           <div className="cellAction">
-            <Link to="/users/test" style={{ textDecoration: "none" }}>
-              <div className="viewButton">View</div>
-            </Link>
+            <div
+              className="viewButton"
+              onClick={() => handleView(params.row._id)}
+            >
+              View
+            </div>
             <div
               className="deleteButton"
-              onClick={() => handleDelete(params.row.id)}
+              onClick={() => handleDelete(params.row._id)}
             >
               Delete
             </div>
@@ -48,6 +97,7 @@ const Datatable = () => {
         pageSize={9}
         rowsPerPageOptions={[9]}
         checkboxSelection
+        getRowId={(row) => row._id}
       />
     </div>
   );

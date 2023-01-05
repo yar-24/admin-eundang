@@ -4,19 +4,69 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { axiosInstance } from "../../config";
+import { getUsers } from "../../redux/features/auth/authSlice";
+import { getPays } from "../../redux/features/order/paySlice";
 
 const Widget = ({ type }) => {
   let data;
 
+  const [orders, setOrders] = useState([]);
+  const [isAmount, setIsAmount] = useState([])
+  const [users, setUsers] = useState([]);
+
+  const { user } = useSelector((state) => state.auth);
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+
+    dispatch(getUsers())
+    .then((res) => {
+      const bykUsers = res.payload.length
+      setUsers(bykUsers)
+    })
+    .catch((err) => {
+      console.log(err)
+    } )
+
+    dispatch(getPays())
+      .then((res) => {
+       const harga = res.payload.map((item) => (
+          item.paketHarga
+        ))
+        setIsAmount(harga)
+        const data = res.payload;
+        setOrders(data);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  }, []);
+
+  var total = 0
+  var i = 0
+//   const desimal = isAmount.join();
+
+
+var b = isAmount.map(i=>Number(i));
+
+  for(i = 0; i <orders.length; i++){
+    total += b[i];
+ }
+
+
   //temporary
-  const amount = 100;
+  const amount = total;
   const diff = 20;
 
   switch (type) {
     case "user":
       data = {
         title: "USERS",
-        isMoney: false,
+        isUsers: true,
         link: "See all users",
         icon: (
           <PersonOutlinedIcon
@@ -32,7 +82,7 @@ const Widget = ({ type }) => {
     case "order":
       data = {
         title: "ORDERS",
-        isMoney: false,
+        isOrder: true,
         link: "View all orders",
         icon: (
           <ShoppingCartOutlinedIcon
@@ -82,9 +132,21 @@ const Widget = ({ type }) => {
     <div className="widget">
       <div className="left">
         <span className="title">{data.title}</span>
+        {data.isMoney &&
         <span className="counter">
-          {data.isMoney && "$"} {amount}
+          {"IDR"} {amount}
         </span>
+        }
+        {data.isOrder &&
+        <span className="counter">
+          {orders.length}
+        </span>
+        }
+        {data.isUsers &&
+        <span className="counter">
+          {users}
+        </span>
+        }
         <span className="link">{data.link}</span>
       </div>
       <div className="right">

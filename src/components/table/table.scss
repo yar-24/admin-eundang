@@ -1,3 +1,5 @@
+
+
 .table {
   .cellWrapper {
     display: flex;
@@ -13,16 +15,63 @@
   }
 
   .status {
+    text-align: center;
     padding: 5px;
     border-radius: 5px;
-
+    border-radius: 10px;
+    padding: 5px;
     &.Approved {
       color: green;
       background-color: rgba(0, 128, 0, 0.151);
     }
-    &.Pending {
+    &.pending {
       color: goldenrod;
       background-color: rgba(189, 189, 3, 0.103);
     }
   }
+}
+
+.button{
+  text-decoration: none;
+  margin: 20px 20px 20px;
+padding: 5px;
+border: none;
+color: #333;
+background-color: aqua;
+cursor: pointer;
+}
+
+.containerModal{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: red;
+}
+
+.modal{
+  position: relative;
+  width: 50%;
+  height: 50vh;
+  margin-left: 30%;
+  background-color: #333;
+  color: #ffffff;
+}
+
+.close{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: -15px;
+  top: -15px;
+  width: 30px;
+  height: 30px;
+  border-radius: 100%;
+  background-color: red;
+  cursor: pointer;
+}
+.statusModal{
+  padding: 20px;
+  height: 100%;
+  background-color: blue;
 }
